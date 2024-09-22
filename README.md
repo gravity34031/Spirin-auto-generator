@@ -1,0 +1,1 @@
+# Spirin-auto-generator
