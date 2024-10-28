@@ -280,6 +280,7 @@ namespace Tyuiu."""+fio+""".Sprint"""+str(sprint)+""".Task"""+str(task)+""".V"""
                 print(f"Solution {self.solution_folder_name} был успешно создан!")
             else:
                 print("Ошибка при создании solution.")
+            os.chdir("../")
                 
     def __copy_dll(self):
         path = f"{self.path[:-1] + str(self.sprint_number-1)}\\{self.shit_dll}"
