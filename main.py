@@ -1,6 +1,8 @@
 import subprocess
 import os
 import xml.etree.ElementTree as ET
+import json
+
 
 class Program:
     """
@@ -22,6 +24,7 @@ class Program:
         # Измени фамилию-имя-отчество на свое
     initials = "KomarovNA"
     initials_ru = "Комаров Никита Алексеевич"
+    group = "ИИПБ-24-1"
         # !!! ИЗМЕНИ НОМЕР СПРИНТА !!!
     sprint_number = 5
         # change often
@@ -34,9 +37,35 @@ class Program:
     
     
     def __init__(self):
-        task_variant = input('№таска №варианта через пробел:')
-        self.task_number, self.variant_number = task_variant.split()
-        # self.task_number, self.variant_number = ('2', '17')
+        # read config from json
+        config_file = 'config.json'
+        try:
+            with open(config_file, encoding='utf-8-sig') as json_data:
+                data = json.load(json_data)
+                self.projects_directory = data.get('projects_directory', '')
+                self.sprint_number = data.get('sprint_number', '')
+                self.initials = data.get('initials', '')
+                self.initials_ru = data.get('initials_ru', '')
+                self.group = data.get("group", '')
+                self.title = data.get('title', '')
+                self.condition = data.get('condition', '')
+        except:
+            print("!"*40+"\nОТСТУТСТВУЕТ ФАЙЛ КОНФИГУРАЦИИ config.json \nБудет применена стандартная конфигурация из кода. СОЗДАЙТЕ ФАЙЛ config.json\n"+'!'*40)
+        
+        # read input task and variant numbers
+        task_var_list = input('№таска №варианта через пробел:').split()
+        while True:
+            if len(task_var_list) == 2:
+                task_num, task_var = task_var_list
+                if task_num.isdigit() and task_var.isdigit():
+                    break
+                else:
+                    print("Номер таска и номер варианта должны быть числом.")
+            else:
+                print("Нужно ввести 2 значения: номер таска и номер варианта.")
+            task_var_list = input('\n№таска №варианта через пробел:').split()
+            
+        self.task_number, self.variant_number = task_var_list
         
         self.solution_folder_name = f"Tyuiu.{self.initials}.Sprint{self.sprint_number}"
         self.path = os.path.join(self.projects_directory,self.solution_folder_name)
@@ -76,14 +105,14 @@ class Program:
             
             current_indx += symbols
 
-        self.console_table = """Console.Title = "Спринт #"""+str(self.sprint_number)+""" | Выполнил: """+self.initials_ru+""" | ИИПБ-24-1";
+        self.console_table = """Console.Title = "Спринт #"""+str(self.sprint_number)+""" | Выполнил: """+self.initials_ru+""" | """+self.group+"""";
             //Длинна строки 75 символов
             Console.WriteLine("***************************************************************************");
             Console.WriteLine("* Спринт #"""+str(self.sprint_number)+"""                                                               *");
             Console.WriteLine("* """ + title+' '*(symbols-len(title)) + """*");
             Console.WriteLine("* Задание #"""+task+"""                                                              *");
             Console.WriteLine("* Вариант #"""+variant+f'{" " if len(str(variant))>=2 else ""}'+"""                                                            *");
-            Console.WriteLine("* Выполнил: """+self.initials_ru+""" | ИИПБ-24-1                         *");
+            Console.WriteLine("* Выполнил: """+self.initials_ru+""" | """+self.group+"""                         *");
             Console.WriteLine("***************************************************************************");
             Console.WriteLine("* УСЛОВИЕ:                                                                *"); 
             """ + '\n' + final_str + """
